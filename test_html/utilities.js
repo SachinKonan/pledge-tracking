@@ -1,6 +1,12 @@
 const videoWidth = 600;
 const videoHeight = 500;
 var x = false;
+var arrayLength = 100;
+var dataArray = [];
+
+for(var i = 0; i < arrayLength; i++) {
+    dataArray[i] = 0;
+}
 
 document.addEventListener('DOMContentLoaded',domloaded,false);
 
@@ -37,24 +43,6 @@ async function loadVideo() {
     return video;
 }
 
-async function bindPage() {
-    let video;
-
-    try {
-        video = await loadVideo();
-    } catch (e) {
-        let info = document.getElementById('info');
-        info.textContent = 'this browser does not support video capture,' +
-            'or this device does not have a camera';
-        info.style.display = 'block';
-        throw e;
-    }
-    const net = await posenet.load();
-
-    console.log(video);
-    detectPoseInRealTime(net, video);
-}
-
 function detectPoseInRealTime(net, video) {
     const canvas = document.getElementById('output');
     const ctx = canvas.getContext('2d');
@@ -78,7 +66,25 @@ function detectPoseInRealTime(net, video) {
             console.log(pose);
             x = true;
         }
-        drawKeypoints(pose['keypoints'], 0.6, ctx);
+
+        var keyPoints = pose['keypoints'];
+
+        drawKeypoints(keyPoints, 0.6, ctx);
+
+        if(keyPoints[1]['score'] > 0.6 && keyPoints[2]['score'] > 0.6) {
+            var y = getHandAngle(pose['keypoints']);
+
+            dataArray = dataArray.concat(y)
+            dataArray.splice(0, 1)
+
+            var data_update = {
+                y: [dataArray]
+            };
+
+            Plotly.update('angle', data_update);
+            drawSegment(toTuple(keyPoints[1]['position']), toTuple(keyPoints[2]['position']), 'red', 1, ctx);
+        }
+
         ctx.restore();
 
         requestAnimationFrame(poseDetectionFrame);
@@ -87,12 +93,42 @@ function detectPoseInRealTime(net, video) {
     poseDetectionFrame();
 }
 
+function getHandAngle(keyPoints) {
+    var leftHand = keyPoints[1]['position'];
+    var rightHand = keyPoints[2]['position'];
+    return Math.atan2(rightHand['y'] - leftHand['y'], rightHand['x'] - leftHand['x']) * 180 / Math.PI;
+}
+
+async function bindPage() {
+    let video;
+
+    try {
+        video = await loadVideo();
+    } catch (e) {
+        let info = document.getElementById('info');
+        info.textContent = 'this browser does not support video capture,' +
+            'or this device does not have a camera';
+        info.style.display = 'block';
+        throw e;
+    }
+    const net = await posenet.load();
+
+    detectPoseInRealTime(net, video);
+}
+
 function domloaded() {
     navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-// kick off the demo
+
+
+    Plotly.newPlot('angle', [{
+        y: dataArray,
+        mode: 'lines',
+        line: {color: '#80CAF6'},
+        autosize: false,
+        width: 500,
+        height: 300,
+    }]);
+
     bindPage();
 }
 
-function getAnalytics(keyPoints) {
-
-}

@@ -13,7 +13,7 @@ function drawSegment([ay, ax], [by, bx], color, scale, ctx) {
     ctx.beginPath();
     ctx.moveTo(ax * scale, ay * scale);
     ctx.lineTo(bx * scale, by * scale);
-    ctx.lineWidth = lineWidth;
+    ctx.lineWidth = 1.0;
     ctx.strokeStyle = color;
     ctx.stroke();
 }

@@ -25,6 +25,8 @@ function getCenter(keyPoints) {
         (leftShoulder['y'] + rightShoulder['y'])/2);
 }
 
-function getHandAngle() {
-
+function getHandAngle(keyPoints) {
+    var lefttHand = keyPoints[5]['position'];
+    var rightHand = keyPoints[6]['position'];
+    return Math.atan2(rightHand['y'] - lefttHand['y'], rightHand['x'] - lefttHand['x']) * 180 / Math.PI;
 }

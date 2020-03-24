@@ -5,8 +5,9 @@
     <!-- Load TensorFlow.js -->
     <script src="https://unpkg.com/@tensorflow/tfjs"></script>
     <!-- Load Posenet -->
-    <script src="https://unpkg.com/@tensorflow-models/posenet">
-    </script>
+    <script src="https://unpkg.com/@tensorflow-models/posenet"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
     <style>
         .footer {
             position: fixed;
@@ -21,6 +22,11 @@
             text-align: center;
             margin: auto;
         }
+
+        .aParent div {
+            float: left;
+            clear: none;
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
@@ -28,23 +34,19 @@
 <body>
     <div id="info" style='display:none'>
     </div>
-    <div id='main' class="'footer-text">
-        <video id="video" autoplay playsinline style='display:none'>
-        </video>
-        <canvas id="output" />
-    </div>
-    <div class="footer">
-        <div class="footer-text">
-            <p>
-                PoseNet runs with either a <strong>single-pose</strong> or <strong>multi-pose</strong> detection
-                algorithm. The single person pose detector is faster and more accurate but requires only one subject
-                present in the image.
-                <br>
-                <br> The <strong>output stride</strong> and <strong>input resolution</strong> have the largest effects
-                on accuracy/speed. A <i>higher</i> output stride results in lower accuracy but higher speed. A
-                <i>higher</i> image scale factor results in higher accuracy but lower speed. </p>
+
+    <div class="aParent">
+        <div id='main'>
+            <video id="video" autoplay playsinline style='display:none'>
+            </video>
+            <canvas id="output" />
         </div>
+        <div id="angle"></div>
+        <div id="angle_prime"></div>
     </div>
+
+
+
     <script src="draw.js"></script>
     <script src="utilities.js"></script>
 
