@@ -11,9 +11,9 @@ last_history_token = '1'
 emails = []
 processed_emails = set()
 
-if os.path.exists('token.pickle'):
-    with open('token.pickle', 'rb') as token:
-        creds = pickle.load(token)
+with open('token.pickle', 'rb') as token:
+    creds = pickle.load(token)
+
 service = build('gmail', 'v1', credentials=creds)
 
 def ListHistory(service, user_id, start_history_id='1'):
@@ -66,7 +66,7 @@ def posting():
             if last_email['historyId'] in processed_emails:
                 continue
 
-            relevant_data = getPayLoadValueByNames(last_email['payload']['headers'], ['Subject', 'Date', 'From'])
+            relevant_data = getPayLoadValueByNames(last_email['payload']['headers'], {'Subject', 'Date', 'From'})
             relevant_data['body'] = last_email['snippet']
             emails.append(', '.join(['%s:%s'%(k,v) for k,v in relevant_data.items()]))
             processed_emails.add(curr_token)
