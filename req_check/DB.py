@@ -77,6 +77,9 @@ class database:
     def getMostRecentEmailToken(self):
         return self.db['rush_emails']['last_history_token']
 
+    def setMostRecentEmailToken(self, last):
+        self.db['rush_emails']['last_history_token']=last
+
     def getDatabase(self):
         return self.db.getDict()
 
@@ -98,5 +101,4 @@ class database:
         self.db['rush_emails', 'emails', user, len(all_emails) + 1] = {'From': sender, 'Date': date, 'Token': historyToken, 'Email_id': emailId, 'Subject': subject, 'Body': body}
 
     def addProcessedEmailToken(self, token):
-        all_tokens = self.db['rush_emails', 'email_tokens']
-        all_tokens[len(all_tokens) + 1] = token
+        self.db['rush_emails', 'email_tokens', len(self.getEmailTokens()) + 1] = token

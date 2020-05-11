@@ -85,7 +85,7 @@ def posting():
                 processed_emails.add(curr_token)
 
         last_history_token = curr_token
-
+        db.setMostRecentEmailToken(last_history_token)
         return 'success'
 
     return jsonify(emails)
