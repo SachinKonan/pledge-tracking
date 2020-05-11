@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Flask, request, jsonify
+import base64
 
 app = Flask(__name__)
 data = []
@@ -17,8 +18,7 @@ def homepage():
 def posting():
     if request.method == 'POST':
         content = request.json
-        print(dict(content))
-        data.append(content)
+        data.append(base64.decode(content['data']))
         return 'success'
 
     return jsonify(data)
