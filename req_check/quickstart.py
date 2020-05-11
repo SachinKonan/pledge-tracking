@@ -26,6 +26,14 @@ def ListHistory(service, user_id, start_history_id='1'):
     except Exception as e:
         raise e
 
+def getPayLoadValueByNames(payload, names):
+    d = {}
+    for data in payload:
+        if data['name'] in names:
+            d[data['name']] = data['value']
+            names.remove(data['name'])
+    return d
+
 def main():
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
@@ -69,21 +77,21 @@ def main():
     #o = service.users().watch(userId='me', body=request).execute()
 
     history = ListHistory(service,'me',2883)
-    pprint(history)
 
-    """
     for item in history:
+        if 'messagesAdded' not in item.keys():
+            continue
         for msg in item['messages']:
             email_id = msg['id']
-            msg = service.users().messages().get(userId='me', id=email_id,format='metadata').execute()
-            print(msg)
-            if msg['historyId'] == '2264':
-                print(msg['snippet'])
-                for header in msg['payload']['headers']:
-                    if header['name'] == 'From':
+            last_email = service.users().messages().get(userId='me', id=email_id,format='metadata').execute()
+            relevant_data = getPayLoadValueByNames(last_email['payload']['headers'], {'Subject', 'Date', 'From'})
+            relevant_data['Body'] = last_email['snippet']
+            email = relevant_data['From']
+            relevant_data['From'] = email[email.find('<') + 1:email.find('>')]
+            relevant_data['Email_id'] = email_id
+            print(last_email)
+            relevant_data['Token'] = msg['historyId']
 
-                        print(header['value'])
-    """
 
 
 
