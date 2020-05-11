@@ -62,7 +62,9 @@ def posting():
 
         curr_token = None
         for item in history:
-            for last_email in item['messages']:
+            for msg in item['messages']:
+                email_id = msg['id']
+                last_email = service.users().messages().get(userId='me', id=email_id,format='metadata').execute()
                 curr_token = last_email['historyId']
                 if curr_token in processed_emails:
                     continue
