@@ -8,6 +8,34 @@ from google.auth.transport.requests import Request
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
+def ListHistory(service, user_id, start_history_id='1'):
+    """List History of all changes to the user's mailbox.
+
+    Args:
+      service: Authorized Gmail API service instance.
+      user_id: User's email address. The special value "me"
+      can be used to indicate the authenticated user.
+      start_history_id: Only return Histories at or after start_history_id.
+
+    Returns:
+      A list of mailbox changes that occurred after the start_history_id.
+    """
+    try:
+        history = (service.users().history().list(userId=user_id,
+                                                  startHistoryId=start_history_id)
+                   .execute())
+        changes = history['history'] if 'history' in history else []
+        while 'nextPageToken' in history:
+            page_token = history['nextPageToken']
+            history = (service.users().history().list(userId=user_id,
+                                                      startHistoryId=start_history_id,
+                                                      pageToken=page_token).execute())
+            changes.extend(history['history'])
+
+        return changes
+    except Exception as e:
+        raise e
+
 def main():
     """Shows basic usage of the Gmail API.
     Lists the user's Gmail labels.
@@ -50,6 +78,15 @@ def main():
     }
     o = service.users().watch(userId='me', body=request).execute()
     print(o)
+
+    history = ListHistory(service,'me', '2030')
+    for item in history:
+        for msg in item['messages']:
+            email_id = msg['id']
+            msg = service.users().messages().get(userId='me', id=email_id).execute()
+            print(msg)
+
+
 
 
 if __name__ == '__main__':

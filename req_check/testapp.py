@@ -18,7 +18,9 @@ def homepage():
 def posting():
     if request.method == 'POST':
         content = request.json
-        data.append(content)
+        encoded_data = content['message']['data']
+        decoded_data = base64.b64decode(encoded_data).decode('utf-8')
+        data.append(decoded_data)
         return 'success'
 
     return jsonify(data)
