@@ -78,7 +78,7 @@ class database:
         return self.db['rush_emails']['last_history_token']
 
     def setMostRecentEmailToken(self, last):
-        self.db['rush_emails']['last_history_token']=last
+        self.db['rush_emails', 'last_history_token']=last
 
     def getDatabase(self):
         return self.db.getDict()
