@@ -2,14 +2,16 @@ from datetime import datetime
 from flask import Flask, request, jsonify
 import base64
 import pickle
-import os
 from googleapiclient.discovery import build
+from req_check.DB import database
 
 app = Flask(__name__)
 
-last_history_token = '1'
+db = database()
+last_history_token = db.getMostRecentEmailToken()
+
 emails = []
-processed_emails = set()
+processed_emails = db.getEmailTokens()
 
 with open('token.pickle', 'rb') as token:
     creds = pickle.load(token)
@@ -70,7 +72,15 @@ def posting():
                     continue
 
                 relevant_data = getPayLoadValueByNames(last_email['payload']['headers'], {'Subject', 'Date', 'From'})
-                relevant_data['body'] = last_email['snippet']
+                relevant_data['Body'] = last_email['snippet']
+                email = relevant_data['From']
+                relevant_data['From'] = email[email.find('<') + 1:email.find('>')]
+                relevant_data['Email_id'] = email_id
+                relevant_data['Token'] = curr_token
+
+                db.addEmail(relevant_data['From'], relevant_data['Date'], relevant_data['Email_id'], relevant_data['Token'], relevant_data['Subject'], relevant_data['Body'])
+                db.addProcessedEmailToken(curr_token)
+
                 emails.append(', '.join(['%s:%s'%(k,v) for k,v in relevant_data.items()]))
                 processed_emails.add(curr_token)
 

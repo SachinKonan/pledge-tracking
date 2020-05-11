@@ -69,8 +69,9 @@ def main():
     #o = service.users().watch(userId='me', body=request).execute()
 
     history = ListHistory(service,'me',2212)
-    #pprint(history)
+    pprint(history)
 
+    """
     for item in history:
         for msg in item['messages']:
             email_id = msg['id']
@@ -82,6 +83,8 @@ def main():
                     if header['name'] == 'From':
 
                         print(header['value'])
+    """
+
 
 
 
