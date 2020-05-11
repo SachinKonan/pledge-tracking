@@ -1,6 +1,7 @@
 from datetime import datetime
 from flask import Flask, request, jsonify
 import base64
+import json
 
 app = Flask(__name__)
 data = []
@@ -20,7 +21,7 @@ def posting():
         content = request.json
         encoded_data = content['message']['data']
         decoded_data = base64.b64decode(encoded_data).decode('utf-8')
-        data.append(decoded_data)
+        data.append(json.loads(decoded_data))
         return 'success'
 
     return jsonify(data)

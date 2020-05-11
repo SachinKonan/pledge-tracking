@@ -9,17 +9,6 @@ from google.auth.transport.requests import Request
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 def ListHistory(service, user_id, start_history_id='1'):
-    """List History of all changes to the user's mailbox.
-
-    Args:
-      service: Authorized Gmail API service instance.
-      user_id: User's email address. The special value "me"
-      can be used to indicate the authenticated user.
-      start_history_id: Only return Histories at or after start_history_id.
-
-    Returns:
-      A list of mailbox changes that occurred after the start_history_id.
-    """
     try:
         history = (service.users().history().list(userId=user_id,
                                                   startHistoryId=start_history_id)
@@ -76,15 +65,20 @@ def main():
         'labelIds': ['INBOX'],
         'topicName': 'projects/gtakpsi-rush/topics/gmailTrigger'
     }
-    o = service.users().watch(userId='me', body=request).execute()
-    print(o)
+    #o = service.users().watch(userId='me', body=request).execute()
 
-    history = ListHistory(service,'me', '2030')
+    history = ListHistory(service,'me', 1)
     for item in history:
         for msg in item['messages']:
             email_id = msg['id']
-            msg = service.users().messages().get(userId='me', id=email_id).execute()
+            msg = service.users().messages().get(userId='me', id=email_id,format='metadata').execute()
             print(msg)
+            if msg['historyId'] == '2151':
+                print(msg['snippet'])
+                for header in msg['payload']['headers']:
+                    if header['name'] == 'From':
+
+                        print(header['value'])
 
 
 
