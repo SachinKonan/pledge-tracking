@@ -90,11 +90,12 @@ class database:
         self.db['rush_emails','emails', sender, 'default'] = {'From': 'default', 'Date': 'default', 'Subject': 'default', 'Body': 'default'}
 
     def addEmail(self, sender, date, emailId, historyToken, subject, body):
-        if sender not in self.db['rush_emails', 'emails']:
-            print('Sender not in database: %s' % (sender))
-            self.createDefaultUser(sender)
-        all_emails = self.db['rush_emails', 'emails', sender]
-        self.db['rush_emails', 'emails', sender, len(all_emails) + 1] = {'From': sender, 'Date': date, 'Token': historyToken, 'Email_id': emailId, 'Subject': subject, 'Body': body}
+        user = sender[0:sender.find('@')]
+        if user not in self.db['rush_emails', 'emails']:
+            print('Sender not in database: %s' % (user))
+            self.createDefaultUser(user)
+        all_emails = self.db['rush_emails', 'emails', user]
+        self.db['rush_emails', 'emails', user, len(all_emails) + 1] = {'From': sender, 'Date': date, 'Token': historyToken, 'Email_id': emailId, 'Subject': subject, 'Body': body}
 
     def addProcessedEmailToken(self, token):
         all_tokens = self.db['rush_emails', 'email_tokens']
