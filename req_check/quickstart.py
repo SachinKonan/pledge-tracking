@@ -4,6 +4,7 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+from pprint import pprint
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
@@ -67,18 +68,22 @@ def main():
     }
     #o = service.users().watch(userId='me', body=request).execute()
 
-    history = ListHistory(service,'me', 1)
+    history = ListHistory(service,'me',2212)
+    #pprint(history)
+
     for item in history:
         for msg in item['messages']:
             email_id = msg['id']
             msg = service.users().messages().get(userId='me', id=email_id,format='metadata').execute()
             print(msg)
-            if msg['historyId'] == '2151':
+            if msg['historyId'] == '2264':
                 print(msg['snippet'])
                 for header in msg['payload']['headers']:
                     if header['name'] == 'From':
 
                         print(header['value'])
+
+
 
 
 
