@@ -68,7 +68,7 @@ def main():
     }
     #o = service.users().watch(userId='me', body=request).execute()
 
-    history = ListHistory(service,'me',2212)
+    history = ListHistory(service,'me',1)
     pprint(history)
 
     """

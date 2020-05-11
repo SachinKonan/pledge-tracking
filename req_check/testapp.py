@@ -66,6 +66,9 @@ def posting():
         for item in history:
             for msg in item['messages']:
                 email_id = msg['id']
+                if 'messagesAdded' not in msg.keys():
+                    continue
+
                 last_email = service.users().messages().get(userId='me', id=email_id,format='metadata').execute()
                 curr_token = last_email['historyId']
                 if curr_token in processed_emails:
