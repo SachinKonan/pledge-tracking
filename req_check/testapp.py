@@ -61,15 +61,16 @@ def posting():
         history = ListHistory(service,'me',last_history_token)
 
         curr_token = None
-        for last_email in history:
-            curr_token = last_email['historyId']
-            if last_email['historyId'] in processed_emails:
-                continue
+        for item in history:
+            for last_email in item['messages']:
+                curr_token = last_email['historyId']
+                if curr_token in processed_emails:
+                    continue
 
-            relevant_data = getPayLoadValueByNames(last_email['payload']['headers'], {'Subject', 'Date', 'From'})
-            relevant_data['body'] = last_email['snippet']
-            emails.append(', '.join(['%s:%s'%(k,v) for k,v in relevant_data.items()]))
-            processed_emails.add(curr_token)
+                relevant_data = getPayLoadValueByNames(last_email['payload']['headers'], {'Subject', 'Date', 'From'})
+                relevant_data['body'] = last_email['snippet']
+                emails.append(', '.join(['%s:%s'%(k,v) for k,v in relevant_data.items()]))
+                processed_emails.add(curr_token)
 
         last_history_token = curr_token
 
